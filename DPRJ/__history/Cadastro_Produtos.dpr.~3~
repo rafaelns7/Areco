@@ -1,0 +1,16 @@
+program Cadastro_Produtos;
+
+uses
+  Vcl.Forms,
+  uCad_Produtos in '..\FONTES\uCad_Produtos.pas' {frmCad_Produtos},
+  uDMPRINCIPAL in '..\FONTES\uDMPRINCIPAL.pas' {DMPRINCIPAL: TDataModule};
+
+{$R *.res}
+
+begin
+  Application.Initialize;
+  Application.MainFormOnTaskbar := True;
+  Application.CreateForm(TfrmCad_Produtos, frmCad_Produtos);
+  Application.CreateForm(TDMPRINCIPAL, DMPRINCIPAL);
+  Application.Run;
+end.

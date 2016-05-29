@@ -1,0 +1,44 @@
+unit uCad_Produtos;
+
+interface
+
+uses
+  Winapi.Windows, Winapi.Messages, System.SysUtils, System.Variants, System.Classes, Vcl.Graphics,
+  Vcl.Controls, Vcl.Forms, Vcl.Dialogs, Data.DB, System.ImageList, Vcl.ImgList,
+  Vcl.StdCtrls, Vcl.Grids, Vcl.DBGrids, Vcl.ExtCtrls;
+
+type
+  TfrmCad_Produtos = class(TForm)
+    Panel1: TPanel;
+    DBGrid1: TDBGrid;
+    btnNovo: TButton;
+    ImgListProdutos: TImageList;
+    btnEditar: TButton;
+    btnExcluir: TButton;
+    BalloonHint: TBalloonHint;
+    btnSair: TButton;
+    edtLocalizar: TEdit;
+    Label1: TLabel;
+    lblTipoPesquisa: TLabel;
+    procedure FormShow(Sender: TObject);
+  private
+    { Private declarations }
+  public
+    { Public declarations }
+  end;
+
+var
+  frmCad_Produtos: TfrmCad_Produtos;
+
+implementation
+
+{$R *.dfm}
+
+uses uDMPRINCIPAL;
+
+procedure TfrmCad_Produtos.FormShow(Sender: TObject);
+begin
+  DMPRINCIPAL.qryProdutos.Open;
+end;
+
+end.

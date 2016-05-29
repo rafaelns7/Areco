@@ -1,0 +1,140 @@
+unit uCadProdutos;
+
+interface
+
+uses
+  Winapi.Windows, Winapi.Messages, System.SysUtils, System.Variants, System.Classes, Vcl.Graphics,
+  Vcl.Controls, Vcl.Forms, Vcl.Dialogs, Vcl.StdCtrls, Vcl.ComCtrls, Vcl.ExtCtrls,
+  Vcl.Mask, Vcl.DBCtrls, Data.DB;
+
+type
+  TfrmCadProdutos = class(TForm)
+    Panel1: TPanel;
+    PageControl1: TPageControl;
+    TabSheet1: TTabSheet;
+    btnSalvar: TButton;
+    btnCancelar: TButton;
+    dtCadProduto: TDataSource;
+    dbedtDescricao: TDBEdit;
+    Label1: TLabel;
+    dbedtCodBarras: TDBEdit;
+    Label2: TLabel;
+    dbedtPrecoCusto: TDBEdit;
+    Label3: TLabel;
+    dbedtPrecoVenda: TDBEdit;
+    Label4: TLabel;
+    dbedtEstoqueMin: TDBEdit;
+    Label5: TLabel;
+    dbmObservacoes: TDBMemo;
+    Label6: TLabel;
+    dbedtEstoqueAtual: TDBEdit;
+    Label7: TLabel;
+    dbedtNCM: TDBEdit;
+    Label8: TLabel;
+    DBLookupComboBox1: TDBLookupComboBox;
+    Label9: TLabel;
+    dtCFOP: TDataSource;
+    procedure dbedtEstoqueMinKeyPress(Sender: TObject; var Key: Char);
+    procedure btnSalvarClick(Sender: TObject);
+    procedure btnCancelarClick(Sender: TObject);
+    procedure dbedtCodBarrasKeyPress(Sender: TObject; var Key: Char);
+    procedure FormShow(Sender: TObject);
+    procedure FormKeyPress(Sender: TObject; var Key: Char);
+    procedure dbedtNCMKeyPress(Sender: TObject; var Key: Char);
+  private
+    { Private declarations }
+  public
+    { Public declarations }
+  end;
+
+var
+  frmCadProdutos: TfrmCadProdutos;
+
+implementation
+
+{$R *.dfm}
+
+uses uProdutos, uDMPRINCIPAL;
+
+procedure TfrmCadProdutos.btnCancelarClick(Sender: TObject);
+begin
+  ModalResult:=  mrCancel;
+end;
+
+procedure TfrmCadProdutos.btnSalvarClick(Sender: TObject);
+begin
+  if dbedtDescricao.Text = '' then
+  begin
+    Application.MessageBox(' Campo descrição do produto e obrigatório.'#13,
+        ' Atenção ', MB_OK + MB_ICONINFORMATION);
+    dbedtDescricao.SetFocus;
+    exit;
+  end;
+  if dbedtPrecoCusto.Text = '' then
+  begin
+    Application.MessageBox(' Campo preço de custo e obrigatório.'#13,
+        ' Atenção', MB_OK + MB_ICONINFORMATION);
+    dbedtPrecoCusto.SetFocus;
+    exit;
+  end;
+  if dbedtPrecoVenda.Text = '' then
+  begin
+    Application.MessageBox(' Campo preço de venda e obrigatório.'#13,
+        ' Atenção ', MB_OK + MB_ICONINFORMATION);
+    dbedtPrecoVenda.SetFocus;
+    exit;
+  end;
+  if dbedtEstoqueMin.Text = '' then
+  begin
+    Application.MessageBox(' Campo estoque mínimo e obrigatório.'#13,
+        ' Atenção ', MB_OK + MB_ICONINFORMATION);
+    dbedtEstoqueMin.SetFocus;
+    exit;
+  end;
+  if dbedtEstoqueAtual.Text = '' then
+  begin
+    Application.MessageBox(' Campo estoque mínimo e obrigatório.'#13,
+        ' Atenção ', MB_OK + MB_ICONINFORMATION);
+    dbedtEstoqueMin.SetFocus;
+    exit;
+  end;
+  ModalResult:= mrOk;
+end;
+
+procedure TfrmCadProdutos.dbedtNCMKeyPress(Sender: TObject; var Key: Char);
+begin
+  If not( key in['0'..'9',#08] ) then
+    key:=#0;
+end;
+
+procedure TfrmCadProdutos.dbedtCodBarrasKeyPress(Sender: TObject;
+  var Key: Char);
+begin
+  If not( key in['0'..'9',#08] ) then
+    key:=#0;
+end;
+
+procedure TfrmCadProdutos.dbedtEstoqueMinKeyPress(Sender: TObject;
+  var Key: Char);
+begin
+  If not( key in['0'..'9',#08] ) then
+    key:=#0;
+end;
+
+procedure TfrmCadProdutos.FormKeyPress(Sender: TObject; var Key: Char);
+begin
+ If key = #13 then
+ Begin
+   Key:= #0;
+   Perform(Wm_NextDlgCtl,0,0);
+ end;
+end;
+
+procedure TfrmCadProdutos.FormShow(Sender: TObject);
+begin
+  dbedtDescricao.SetFocus;
+  DMPRINCIPAL.cdsCFOP.Open;
+  DMPRINCIPAL.cdsSituacaoTributaria.open;
+
+end;
+end.

@@ -1,0 +1,95 @@
+unit uDMPRINCIPAL;
+
+interface
+
+uses
+  System.SysUtils, System.Classes, Data.DB, Data.SqlExpr,System.IniFiles,IWSystem,
+  Data.DBXFirebird,vcl.Dialogs, Data.FMTBcd, Datasnap.DBClient,
+  Datasnap.Provider;
+
+type
+  TDMPRINCIPAL = class(TDataModule)
+    Conexao: TSQLConnection;
+    dtsProdutos: TSQLDataSet;
+    dtsProdutosID: TIntegerField;
+    dtsProdutosDESCRICAO: TStringField;
+    dtsProdutosCOD_BARRA: TStringField;
+    dtsProdutosPRECO_VENDA: TFMTBCDField;
+    dtsProdutosESTOQUE_MINIMO: TFMTBCDField;
+    dtsProdutosPOSICAO_ESTOQUE: TFMTBCDField;
+    dtspProdutos: TDataSetProvider;
+    cdsProdutos: TClientDataSet;
+    cdsProdutosID: TIntegerField;
+    cdsProdutosDESCRICAO: TStringField;
+    cdsProdutosCOD_BARRA: TStringField;
+    cdsProdutosPRECO_VENDA: TFMTBCDField;
+    cdsProdutosESTOQUE_MINIMO: TFMTBCDField;
+    cdsProdutosPOSICAO_ESTOQUE: TFMTBCDField;
+    dtsCadProdutos: TSQLDataSet;
+    dtspCadProdutos: TDataSetProvider;
+    cdsCadProdutos: TClientDataSet;
+    SPCadProd_ID: TSQLStoredProc;
+    dtsCadProdutosID: TIntegerField;
+    dtsCadProdutosDESCRICAO: TStringField;
+    dtsCadProdutosCOD_BARRA: TStringField;
+    dtsCadProdutosPRECO_CUSTO: TFMTBCDField;
+    dtsCadProdutosPRECO_VENDA: TFMTBCDField;
+    dtsCadProdutosESTOQUE_MINIMO: TFMTBCDField;
+    dtsCadProdutosPOSICAO_ESTOQUE: TFMTBCDField;
+    dtsCadProdutosOBSERVACOES: TStringField;
+    procedure ConexaoBeforeConnect(Sender: TObject);
+    procedure cdsCadProdutosNewRecord(DataSet: TDataSet);
+    procedure dtspCadProdutosBeforeUpdateRecord(Sender: TObject;
+      SourceDS: TDataSet; DeltaDS: TCustomClientDataSet;
+      UpdateKind: TUpdateKind; var Applied: Boolean);
+  private
+    { Private declarations }
+  public
+    { Public declarations }
+  end;
+
+var
+  DMPRINCIPAL: TDMPRINCIPAL;
+
+implementation
+
+{%CLASSGROUP 'Vcl.Controls.TControl'}
+
+{$R *.dfm}
+
+procedure TDMPRINCIPAL.cdsCadProdutosNewRecord(DataSet: TDataSet);
+begin
+  DataSet.FieldByName('ID').AsInteger:=-1;
+end;
+
+procedure TDMPRINCIPAL.ConexaoBeforeConnect(Sender: TObject);
+var
+Arquivo: TIniFile{uses IniFiles};
+begin
+  Try
+    Arquivo:= TIniFile.Create(gsAppPath +'CONFIG.ini');
+    with Conexao do
+    begin
+      Params.Values['DATABASE'] := Arquivo.ReadString('CONFIG','DATABASE','');
+      Params.Values['USERNAME'] := Arquivo.ReadString('CONFIG','USERNAME','');
+      Params.Values['PASSWORD'] := Arquivo.ReadString('CONFIG','PASSWORD','');
+      Arquivo.Free
+    end;
+  except
+    on E : Exception do
+      ShowMessage(E.ClassName+' Erro ao conectar com o banco de dados. : '+E.Message);
+  end;
+end;
+procedure TDMPRINCIPAL.dtspCadProdutosBeforeUpdateRecord(Sender: TObject;
+  SourceDS: TDataSet; DeltaDS: TCustomClientDataSet; UpdateKind: TUpdateKind;
+  var Applied: Boolean);
+begin
+  if SourceDS = dtsCadProdutos then
+  if UpdateKind = ukInsert then
+  begin
+    SPCadProd_ID.ExecProc;
+    DeltaDS.FieldByName('ID').NewValue := SPCadProd_ID.Params[0].AsInteger;
+    SPCadProd_ID.Close;
+  end;
+end;
+end.
